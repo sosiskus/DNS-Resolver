@@ -123,6 +123,7 @@ std::vector<DnsAnswer> DnsLookup::dnsParseStatic()
     dnsHeader.arcount = (dnsRepsonse[pos] << 8) + dnsRepsonse[pos + 1];
     pos += 2;
 
+
     // Recieved DNS questions
     std::vector<DnsQuestion> dnsQuestions;
     for (int i = 0; i < dnsHeader.qdcount; i++)
@@ -138,13 +139,14 @@ std::vector<DnsAnswer> DnsLookup::dnsParseStatic()
         dnsQuestions.push_back(dnsQuestion);
     }
 
+
     // Recieved DNS answers
     std::vector<DnsAnswer> dnsAnswers;
     for (int i = 0; i < dnsHeader.ancount; i++)
     {
         DnsAnswer dnsAnswer;
         // int nextPos;
-        dnsAnswer.answeredQuestion.qname = dnsQuestions[i].qname;
+        dnsAnswer.answeredQuestion.qname = dnsQuestions[dnsRepsonse[pos]].qname;
         pos += 2; // Pointer size
         dnsAnswer.answeredQuestion.qtype = (dnsRepsonse[pos] << 8) + dnsRepsonse[pos + 1];
         pos += 2;
@@ -154,11 +156,14 @@ std::vector<DnsAnswer> DnsLookup::dnsParseStatic()
         pos += 4;
         dnsAnswer.rdlength = (dnsRepsonse[pos] << 8) + dnsRepsonse[pos + 1];
         pos += 2;
+        
         for (int j = 0; j < dnsAnswer.rdlength; j++)
         {
             dnsAnswer.rdata.push_back(dnsRepsonse[pos + j]);
         }
         dnsAnswers.push_back(dnsAnswer);
+        pos += dnsAnswer.rdlength;
+
     }
     return dnsAnswers;
 }

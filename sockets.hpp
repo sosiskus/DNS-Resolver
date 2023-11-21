@@ -58,10 +58,6 @@ public:
         struct sockaddr_in dest_addr;
         dest_addr.sin_family = AF_INET;
         dest_addr.sin_port = htons(std::stoi(localPort));
-        // InetPtonW(AF_INET, ip.c_str(), &dest_addr.sin_addr);
-        // std::wstring widestr = std::wstring(ip.begin(), ip.end());
-        // const wchar_t* widecstr = widestr.c_str();
-        // InetPton(AF_INET,ip.c_str(), &dest_addr.sin_addr);
         dest_addr.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
 
         int sent_bytes = sendto(sockfd, (const char *)&data[0], data.size(), 0, (SOCKADDR *)&dest_addr, sizeof(dest_addr));
@@ -78,7 +74,8 @@ public:
         struct sockaddr_in cli_addr;
         int clilen = sizeof(cli_addr);
 
-        int received_bytes = recvfrom(sockfd, (char *)&buffer[0], buffer.size(), 0, (SOCKADDR *)&cli_addr, &clilen);
+        // int received_bytes = recvfrom(sockfd, (char *)&buffer[0], buffer.size(), 0, (SOCKADDR *)&cli_addr, &clilen);
+        int received_bytes = recv(sockfd, (char *)&buffer[0], buffer.size(), 0);
         if (received_bytes == SOCKET_ERROR)
         {
             int error = WSAGetLastError();

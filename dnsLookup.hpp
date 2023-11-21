@@ -6,6 +6,7 @@
 #include <ctime>
 #include <memory>
 #include <functional>
+#include <iostream>
 
 #include "udpInterface.hpp"
 #include "dnsTypes.hpp"
@@ -38,6 +39,7 @@ public:
             {
                 udpClient->send(dnsPacket, dnsServer);
                 std::vector<unsigned char> dnsResponse = udpClient->receive();
+                std::cout << "response: " << dnsResponse.size() << std::endl;
                 if (dnsResponse.size() > 0)
                 {
                     this->dnsRepsonse = dnsResponse;

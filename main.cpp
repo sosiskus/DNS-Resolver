@@ -1,12 +1,13 @@
 #include <iostream>
 #include "dnsLookup.hpp"
 #include "sockets.hpp"
+#include "defaultParsers.hpp"
 
 int main()
 {
     DnsLookup dnsLookup;
-    dnsLookup.addDnsServer("1.1.1.1", "1.0.0.1");
-    dnsLookup.formDnsQuery("auth_port.fovibalt.com", DnsType::TXT);
+    dnsLookup.addDnsServer("1.1.1.1");
+    dnsLookup.formDnsQuery("ota_port.fovibalt.com", DnsType::TXT);
 
     dnsLookup.sendDnsQuery<UDPInterface>();
     std::cout << "DNS Response: " << std::endl;
@@ -34,7 +35,7 @@ int main()
 
     for (auto &ans : answers)
     {
-        std::cout << ans.txt << std::endl;
+        std::cout << ans.txt << " " << (int)ans.txt.at(ans.txt.size()-2) << std::endl;
     }
 
     return 0;
