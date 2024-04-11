@@ -1,23 +1,19 @@
 #pragma once
-#include "udpInterface.hpp"
+#include "DnsLookup/udpInterface.hpp"
 
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <ws2tcpip.h>
 #include <winsock2.h>
+#include <ws2tcpip.h>
 
-
-// #pragma comment(lib, "Ws2_32.lib")
-
-class UDPInterface : public IUDPInterface
+class WinSocketUDPInterface : public IUDPInterface
 {
 private:
     SOCKET sockfd;
-    struct sockaddr_in addr;
 
 public:
-    UDPInterface(std::string port) : IUDPInterface(port) {}
+    WinSocketUDPInterface(std::string port) : IUDPInterface(port) {}
 
     bool begin() override
     {
@@ -38,22 +34,10 @@ public:
             return false;
         }
 
-        // Bind socket to local port
-        addr.sin_family = AF_INET;
-        addr.sin_addr.s_addr = INADDR_ANY;
-        addr.sin_port = htons(std::stoi(localPort));
-
-        if (bind(sockfd, (SOCKADDR *)&addr, sizeof(addr)) == SOCKET_ERROR)
-        {
-            std::cerr << "Bind failed: " << WSAGetLastError() << std::endl;
-            closesocket(sockfd);
-            return false;
-        }
-
         return true;
     }
 
-    void send(const std::vector<unsigned char> &data, std::string ip) override
+    void send(const std::vector<uint8_t> &data, std::string ip) override
     {
         struct sockaddr_in dest_addr;
         dest_addr.sin_family = AF_INET;
@@ -68,13 +52,36 @@ public:
         std::cout << "Sent " << sent_bytes << " bytes to " << ip << std::endl;
     }
 
-    std::vector<unsigned char> receive() override
+    std::vector<uint8_t> receive() override
     {
-        std::vector<unsigned char> buffer(1024);
-        struct sockaddr_in cli_addr;
-        int clilen = sizeof(cli_addr);
+        std::vector<uint8_t> buffer(1024);
 
-        // int received_bytes = recvfrom(sockfd, (char *)&buffer[0], buffer.size(), 0, (SOCKADDR *)&cli_addr, &clilen);
+        // set timeout for recv
+        fd_set fds;
+        int n;
+        struct timeval tv;
+
+        // Set up the file descriptor set.
+        FD_ZERO(&fds);
+        FD_SET(sockfd, &fds);
+
+        // Set up the struct timeval for the timeout.
+        tv.tv_sec = 5;
+        tv.tv_usec = 0;
+
+        // Wait until timeout or data received.
+        n = select(sockfd, &fds, NULL, NULL, &tv);
+        if (n == 0)
+        {
+            std::cout << "Timeout..." << std::endl;
+            return {};
+        }
+        else if (n == -1)
+        {
+            std::cout << "Error..." << std::endl;
+            return {};
+        }
+
         int received_bytes = recv(sockfd, (char *)&buffer[0], buffer.size(), 0);
         if (received_bytes == SOCKET_ERROR)
         {

@@ -6,22 +6,22 @@
 struct A_Record
 {
     const static DnsType type = DnsType::A;
-    unsigned char ip[4];
+    uint8_t ip[4];
 };
 
 struct SRV_Record
 {
     const static DnsType type = DnsType::SRV;
-    unsigned short priority;
-    unsigned short weight;
-    unsigned short port;
+    uint16_t priority;
+    uint16_t weight;
+    uint16_t port;
     std::string target;
 };
 
-std::function<A_Record(DnsAnswer, DnsLookup &)> A_RecordParser = [](DnsAnswer ans, DnsLookup &dns)
+std::function<A_Record(const DnsAnswer &, const HelperFunctions &)> A_RecordParser = [](const DnsAnswer &ans, const HelperFunctions &functions)
 { return *(A_Record *)ans.rdata.data(); };
 
-std::function<SRV_Record(DnsAnswer, DnsLookup &)> SRV_RecordParser = [](DnsAnswer ans, DnsLookup &dns)
+std::function<SRV_Record(const DnsAnswer &, const HelperFunctions &)> SRV_RecordParser = [](const DnsAnswer &ans, const HelperFunctions &functions)
 {
     SRV_Record srv;
     int pos = 0;
@@ -32,7 +32,7 @@ std::function<SRV_Record(DnsAnswer, DnsLookup &)> SRV_RecordParser = [](DnsAnswe
     srv.port = (ans.rdata[pos] << 8) + ans.rdata[pos + 1];
     pos += 2;
     int nextPos;
-    auto target = dns.readName(ans.rdata, pos, nextPos);
+    auto target = functions.readName(ans.rdata, pos, nextPos);
     for (int j = 0; j < target.size(); j++)
     {
         srv.target += (char)target[j];
