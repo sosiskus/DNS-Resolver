@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <stdint.h>
 
 #include "dnsTypes.hpp"
 #include "udpInterface.hpp"
@@ -28,7 +29,7 @@ public:
     // Form a DNS query packet to be sent to the DNS server
     // dnsServiceName: The name of the service to be resolved e.g. "google.com"
     // dnsType: The type of DNS query to be made e.g. DnsType::A
-    void formDnsQuery(std::string dnsServiceName, DnsType dnsType);
+    void formDnsQuery(const std::string& dnsServiceName, const DnsType dnsType);
 
     // Send the DNS query to the DNS server and receive the response
     // UdpClass: The class that will be used to send the DNS query must be a subclass of IUDPInterface
@@ -72,11 +73,13 @@ public:
     }
 
 private:
-    HelperFunctions helperFunctions;
+    HelperFunctions helperFunctions; // Helper functions for parsing the DNS response
 
+    // Parse the static members of the DNS response, including the header, question, and answer sections without parsing the data
+    // Data parsing is done in the parseDnsResponse function by lambda functions
     std::vector<DnsAnswer> dnsParseStatic();
 
-    std::vector<std::string> dnsServers;
+    std::vector<std::string> dnsServers; // DNS servers to be used for the DNS query
     std::vector<uint8_t> dnsPacket;
     std::vector<uint8_t> dnsResponse;
 };

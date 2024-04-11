@@ -30,3 +30,6 @@ target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES})
 if(WIN32)
   target_link_libraries(${PROJECT_NAME} wsock32 ws2_32)
 endif()
+
+add_subdirectory(examples/exampleUsingDefaultParsers)
+add_subdirectory(examples/exampleUsingCustomParsers)

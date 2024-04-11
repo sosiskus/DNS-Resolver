@@ -1,78 +1,66 @@
 #include "DnsLookup/helperFunctions.hpp"
 
+#include <iostream>
+#include <bits/stdc++.h>
 std::vector<uint8_t> HelperFunctions::formatName(const std::string name) const
 {
     std::vector<uint8_t> formattedName;
     std::string::size_type pos = 0;
     std::string::size_type prev = 0;
+
     while ((pos = name.find('.', prev)) != std::string::npos)
     {
         formattedName.push_back(pos - prev);
-        for (std::string::size_type i = prev; i < pos; ++i)
-        {
-            formattedName.push_back(name[i]);
-        }
+        std::copy(name.begin() + prev, name.begin() + pos, std::back_inserter(formattedName));
         prev = pos + 1;
     }
+
     formattedName.push_back(name.size() - prev);
-    for (std::string::size_type i = prev; i < name.size(); ++i)
-    {
-        formattedName.push_back(name[i]);
-    }
+    std::copy(name.begin() + prev, name.end(), std::back_inserter(formattedName));
     formattedName.push_back(0);
+
     return formattedName;
 }
 
 std::vector<uint8_t> HelperFunctions::extractNameFromPointer(uint16_t namePointer, std::vector<uint8_t> &dnsResponse) const
 {
     namePointer = namePointer & 0x3FFF; // remove first 2 bits
-    namePointer++;                      // skip first byte
     std::vector<uint8_t> name;
 
     // seek for first zero
-    int end = 0;
-    for (int i = namePointer; i < dnsResponse.size(); i++)
+    auto itterator = std::find(dnsResponse.begin() + namePointer, dnsResponse.end(), 0);
+    if (itterator == dnsResponse.end())
     {
-        if (dnsResponse[i] == 0)
-        {
-            end = i;
-            break;
-        }
+        std::cerr << "Error: Name pointer points to invalid location" << std::endl;
+        return name;
     }
 
-    std::copy(dnsResponse.begin() + namePointer, dnsResponse.begin() + end, std::back_inserter(name));
+    std::copy(dnsResponse.begin() + namePointer, itterator, std::back_inserter(name));
+    
     return name;
 }
 
 std::vector<uint8_t> HelperFunctions::readName(const std::vector<uint8_t> &dnsResponse, int pos, int &nextPos) const
 {
     std::vector<uint8_t> name;
-    int offset = 0;
-    while (true)
+
+    // read first byte this is the length of the first part of the name, read all parts until 0x00
+    while (pos < dnsResponse.size())
     {
-        uint8_t len = dnsResponse[pos + offset];
+        uint8_t len = dnsResponse[pos];
         if (len == 0)
         {
-            nextPos = pos + offset + 1;
+            nextPos = pos + 1;
             break;
         }
         else
         {
-            for (int i = 0; i < len; i++)
-            {
-                name.push_back(dnsResponse[pos + offset + 1 + i]);
-            }
-            if (dnsResponse[pos + offset + 1 + len] == 0x00)
-            {
-                nextPos = pos + offset + 1 + len + 1;
-                break;
-            }
-            else
-            {
-                name.push_back('.');
-                offset += len + 1;
-            }
+            std::copy(dnsResponse.begin() + pos + 1, dnsResponse.begin() + pos + 1 + len, std::back_inserter(name));
+            name.push_back('.');
+            pos += len + 1;
         }
     }
+
+    name.pop_back(); // remove last dot
     return name;
 }

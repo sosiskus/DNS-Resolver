@@ -1,22 +1,21 @@
 #include "DnsLookup/dnsLookup.hpp"
 
+#include <functional>
+#include <memory>
+#include <random>
 #include <string>
 #include <vector>
-#include <cstdarg>
-#include <cctype>
-#include <ctime>
-#include <memory>
-#include <functional>
 
-void DnsLookup::formDnsQuery(std::string dnsServiceName, DnsType dnsType)
+void DnsLookup::formDnsQuery(const std::string &dnsServiceName, const DnsType dnsType)
 {
-    
     // Generate random id
-    srand(time(NULL));
+    std::random_device r;
+    std::default_random_engine e1(r());
+    std::uniform_int_distribution<uint16_t> uniform_dist(0, std::numeric_limits<uint16_t>::max());
 
     // Define dns header
     DnsHeader dnsHeader;
-    dnsHeader.id = (uint16_t)(rand() % 65536);
+    dnsHeader.id = uniform_dist(e1);
     dnsHeader.qr = 0;     // This is a query
     dnsHeader.opcode = 0; // This is a standard query
     dnsHeader.aa = 0;     // Not Authoritative
@@ -34,11 +33,12 @@ void DnsLookup::formDnsQuery(std::string dnsServiceName, DnsType dnsType)
 
     // Form dns question
     DnsQuestion dnsQuestion;
-    dnsQuestion.qname = helperFunctions.formatName(dnsServiceName);
+    dnsQuestion.qname = helperFunctions.formatName(dnsServiceName); // Convert domain name to dns format
 
-    dnsQuestion.qtype = (uint16_t)dnsType;
-    dnsQuestion.qclass = 1;
+    dnsQuestion.qtype = (uint16_t)dnsType; // Type of the query
+    dnsQuestion.qclass = 1;                // This is internet class
 
+    // Form the dns query packet
     std::vector<uint8_t> dnsQuery;
     dnsQuery.push_back((dnsHeader.id >> 8) & 255);
     dnsQuery.push_back(dnsHeader.id & 255);
@@ -53,10 +53,7 @@ void DnsLookup::formDnsQuery(std::string dnsServiceName, DnsType dnsType)
     dnsQuery.push_back((dnsHeader.arcount >> 8) & 255);
     dnsQuery.push_back(dnsHeader.arcount & 255);
 
-    for (auto &c : dnsQuestion.qname)
-    {
-        dnsQuery.push_back(c);
-    }
+    std::copy(dnsQuestion.qname.begin(), dnsQuestion.qname.end(), std::back_inserter(dnsQuery));
 
     dnsQuery.push_back((dnsQuestion.qtype >> 8) & 255);
     dnsQuery.push_back(dnsQuestion.qtype & 255);
@@ -64,13 +61,6 @@ void DnsLookup::formDnsQuery(std::string dnsServiceName, DnsType dnsType)
     dnsQuery.push_back(dnsQuestion.qclass & 255);
 
     this->dnsPacket = dnsQuery;
-
-    
-    for (auto &c : dnsQuery)
-    {
-        
-    }
-    
 }
 
 std::vector<DnsAnswer> DnsLookup::dnsParseStatic()
@@ -119,7 +109,7 @@ std::vector<DnsAnswer> DnsLookup::dnsParseStatic()
     for (int i = 0; i < dnsHeader.ancount; i++)
     {
         DnsAnswer dnsAnswer;
-      
+
         uint16_t namePointer = (dnsResponse[pos] << 8) + dnsResponse[pos + 1];
         dnsAnswer.answeredQuestion.qname = helperFunctions.extractNameFromPointer(namePointer, dnsResponse);
 
@@ -132,16 +122,14 @@ std::vector<DnsAnswer> DnsLookup::dnsParseStatic()
         pos += 4;
         dnsAnswer.rdlength = (dnsResponse[pos] << 8) + dnsResponse[pos + 1];
         pos += 2;
-        
+
+        // Copy rdata
         dnsAnswer.rdata.resize(dnsAnswer.rdlength);
-        for (int j = 0; j < dnsAnswer.rdlength; j++)
-        {
-            dnsAnswer.rdata[j] = dnsResponse[pos + j];
-        }
+        std::copy(dnsResponse.begin() + pos, dnsResponse.begin() + pos + dnsAnswer.rdlength, dnsAnswer.rdata.begin());
 
         pos += dnsAnswer.rdlength;
 
-        dnsAnswers[i] = dnsAnswer;
+        dnsAnswers[i] = dnsAnswer; // Add the answer to the DNS answer struct vector
     }
 
     return dnsAnswers;
