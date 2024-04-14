@@ -13,7 +13,7 @@
   </p>
 </p>
 
-![Downloads](https://img.shields.io/github/downloads/sosiskus/DNS-Resolver/total) ![Issues](https://img.shields.io/github/issues/sosiskus/DNS-Resolver) 
+![Issues](https://img.shields.io/github/issues/sosiskus/DNS-Resolver) 
 
 ## Table Of Contents
 
