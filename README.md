@@ -74,12 +74,18 @@ target_link_libraries(yourProjectName PRIVATE DnsResolver)
 
 ### VSCode integration: <a name="vscode-integration"></a>
 * A fter cloning library in VSCode press SHIFT + CTRL + P and find
+
 ![Resetcmake](https://i.ibb.co/DG0j4kq/1.png)
+
 * CMake should reload and this popup appears
+  
 ![Popup](https://i.ibb.co/9Y2Q479/1.png)
+
 You should choose your desired compiler e.g. GCC, if you do not see your installed compiler here make sure all environment variables is set correctly
-* To build all press build button 
+* To build all press build button
+  
 ![Buld](https://i.ibb.co/MBD8JvM/g.png)
+
 If you want to try my examples press [all] button and choose example, also when pressing run button make sure that chose example also is selected as target
 
 For other systems like ESP32 only bare hpp and cpp files should be used
