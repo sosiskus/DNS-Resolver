@@ -26,7 +26,7 @@
     * [VSCode integration](#vscode-integration)
 * [Usage](#usage)
   * [Custom records](#custom-records)
-  * [Custom UDP reciever](#custom-UDP-reciever)
+  * [Custom UDP receiver](#custom-UDP-receiver)
 * [Contributing](#contributing)
 * [Authors](#authors)
 
@@ -42,17 +42,17 @@ One of the key features of this library is its extensibility. It allows you to d
 
 With its modular design, the DNS Lookup Library is easy to integrate into your existing projects. Whether you're building networking applications, system utilities, or any other software that requires DNS resolution, this library is an invaluable tool that will save you time and effort.
 
-## Getting Started
+## Getting Started <a name="getting-started"></a>
 
 Here's a short Getting Started Description for the DNS Lookup Library
 
-### Prerequisites
+### Prerequisites <a name="prerequisites"></a>
 
 Here are the prerequisites that must be installed before using the DNS Lookup Library
 *C++ and any of the compiler supporting C++ 20
 *CMake to be able to use library, but it also works without CMake on embedded systems like ESP32 and ESP8266
 
-### Installation
+### Installation <a name="installation"></a>
 
 * Clone the repository into your project tree by 
 ```git clone https://github.com/sosiskus/DNS-Resolver``` or download release files and unzip 
@@ -62,16 +62,16 @@ Here are the prerequisites that must be installed before using the DNS Lookup Li
 add_subdirectory(DNS-Resolver)
 target_link_libraries(yourProjectName PRIVATE DnsResolver)
 ```
-#### For Windows:
+#### For Windows: <a name="for-windows"></a>
 * Run ```cmake -G "MinGW Makefiles" .``` in the source directory
 * To build run ```cmake --build .```
 
-For Linux:
+### For Linux: <a name="for-linux"></a> 
 * Run ```cmake .```
 * To build run ```make```
 
-VSCode integration:
-*A fter cloning library in VSCode press SHIFT + CTRL + P and find
+### VSCode integration: <a name="vscode-integration"></a>
+* A fter cloning library in VSCode press SHIFT + CTRL + P and find
 ![Resetcmake](https://i.ibb.co/DG0j4kq/1.png)
 * CMake should reload and this popup appears
 ![Popup](https://i.ibb.co/9Y2Q479/1.png)
@@ -83,7 +83,7 @@ If you want to try my examples press [all] button and choose example, also when 
 For other systems like ESP32 only bare hpp and cpp files should be used
 
 
-## Usage
+## Usage <a name="usage"></a>
 
 The DNS Lookup Library is easy to set up and use in your C++ projects. Follow these simple steps to get started with default parser and winsockets:
 * Include the Library: 
@@ -112,7 +112,7 @@ dnsLookup.sendAndReceiveDnsQuery<WinSocketUDPInterface>();
 std::vector<A_Record> records = dnsLookup.parseDnsResponse<A_Record>(A_RecordParser);
 ```
 
-### Custom records
+### Custom records <a name="custom-records"></a>
 The DNS Lookup Library provides a flexible and extensible way to handle custom record types and data structures. Here's a getting started guide on how to define and parse your own record types and structs.
 
 * Define a struct or class that represents your desired record type. This struct should contain the necessary fields to store the data from the DNS response. All the fields and information how to parse record can be found in the [official DNS documentation](https://www.ietf.org/rfc/rfc1035.txt 'docs')
@@ -153,7 +153,7 @@ for (const auto &ans : answers)
 
 Remember to consult the library's documentation for more advanced usage scenarios, such as handling complex record types or implementing additional parsing logic. 
 
-### Custom UDP reciever
+### Custom UDP receiver <a name="custom-UDP-receiver"></a>
 The DNS Lookup Library provides an interface (IUDPInterface) for implementing custom UDP communication mechanisms. This allows you to seamlessly integrate the library with different socket libraries or network protocols. Here's a getting started guide on how to define your own implementation of the UDP interface
 * Include the necessary headers in your implementation file:
 ```c++
@@ -212,7 +212,7 @@ dnsLookup.sendAndReceiveDnsQuery<MyCustomUDPInterface>();
 Remember to thoroughly test your implementation and ensure that it correctly handles all edge cases and error conditions.
 
 
-## Contributing
+## Contributing <a name="contributing"></a>
 
 Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 * If you have suggestions for adding or removing projects, feel free to [open an issue](https://github.com/sosiskus/DNS-Resolver/issues/new) to discuss it, or directly create a pull request after you edit the *README.md* file with necessary changes.
@@ -225,6 +225,6 @@ Contributions are what make the open source community such an amazing place to b
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## Authors
+## Authors <a name="authors"></a>
 
 * **Nikita Klepikov** - *Tech Startup Founder | LED Controller Developer* - [Nikita Klepikov](https://github.com/sosiskus/)
