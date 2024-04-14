@@ -33,9 +33,6 @@ std::function<SRV_Record(const DnsAnswer &, const HelperFunctions &)> SRV_Record
     pos += 2;
     int nextPos;
     auto target = functions.readName(ans.rdata, pos, nextPos);
-    for (int j = 0; j < target.size(); j++)
-    {
-        srv.target += (char)target[j];
-    }
+    srv.target = std::string(target.begin(), target.end());
     return srv;
 };

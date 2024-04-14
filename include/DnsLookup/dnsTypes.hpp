@@ -4,6 +4,7 @@
 #include <functional>
 #include <stdint.h>
 
+// Structure that holds the DNS header
 struct DnsHeader
 {
     uint16_t id;
@@ -23,6 +24,7 @@ struct DnsHeader
     uint16_t arcount;
 };
 
+// Structure that holds a DNS question
 struct DnsQuestion
 {
     std::vector<uint8_t> qname;
@@ -30,7 +32,17 @@ struct DnsQuestion
     uint16_t qclass;
 };
 
-enum class DnsType
+// Structure that holds a DNS answer
+struct DnsAnswer
+{
+    DnsQuestion answeredQuestion;
+    unsigned int ttl;
+    uint16_t rdlength;
+    std::vector<uint8_t> rdata;
+};
+
+// Enum class that holds the DNS types
+enum class DnsType : uint8_t
 {
     A = 1,
     NS = 2,
@@ -49,12 +61,4 @@ enum class DnsType
     AAAA = 28,
     SRV = 33,
     ANY = 255
-};
-
-struct DnsAnswer
-{
-    DnsQuestion answeredQuestion;
-    unsigned int ttl;
-    uint16_t rdlength;
-    std::vector<uint8_t> rdata;
 };

@@ -7,10 +7,11 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+// WinSocket implementation of the UDP interface
 class WinSocketUDPInterface : public IUDPInterface
 {
 private:
-    SOCKET sockfd;
+    SOCKET sockfd; // socket file descriptor
 
 public:
     WinSocketUDPInterface(std::string port) : IUDPInterface(port) {}
@@ -39,11 +40,13 @@ public:
 
     void send(const std::vector<uint8_t> &data, std::string ip) override
     {
+        // Set up destination address and port
         struct sockaddr_in dest_addr;
         dest_addr.sin_family = AF_INET;
         dest_addr.sin_port = htons(std::stoi(localPort));
         dest_addr.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
 
+        // Send data
         int sent_bytes = sendto(sockfd, (const char *)&data[0], data.size(), 0, (SOCKADDR *)&dest_addr, sizeof(dest_addr));
         if (sent_bytes == SOCKET_ERROR)
         {
@@ -54,6 +57,7 @@ public:
 
     std::vector<uint8_t> receive() override
     {
+        // Create buffer for received data
         std::vector<uint8_t> buffer(1024);
 
         // set timeout for recv
@@ -82,6 +86,7 @@ public:
             return {};
         }
 
+        // Receive data
         int received_bytes = recv(sockfd, (char *)&buffer[0], buffer.size(), 0);
         if (received_bytes == SOCKET_ERROR)
         {
@@ -94,6 +99,7 @@ public:
         }
         else
         {
+            // Trim buffer to actual size
             buffer.resize(received_bytes);
         }
 

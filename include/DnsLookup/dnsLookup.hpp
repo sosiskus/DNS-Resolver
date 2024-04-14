@@ -13,6 +13,7 @@
 #include "udpInterface.hpp"
 #include "helperFunctions.hpp"
 
+// Class that is used to perform DNS lookups
 class DnsLookup
 {
 public:
