@@ -55,8 +55,10 @@ Here are the prerequisites that must be installed before using the DNS Lookup Li
 ### Installation <a name="installation"></a>
 
 * Clone the repository into your project tree by 
-```git clone https://github.com/sosiskus/DNS-Resolver``` or download release files and unzip 
+```git clone https://github.com/sosiskus/DNS-Resolver``` or download release files and unzip
+
 ![Tree](https://i.ibb.co/zxX4cfb/1.png)
+
 * Add to CMakeLists.txt file following lines
 ```cmake
 add_subdirectory(DNS-Resolver)
