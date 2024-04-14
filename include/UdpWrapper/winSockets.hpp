@@ -1,4 +1,5 @@
 #pragma once
+#ifdef _WIN32
 #include "DnsLookup/udpInterface.hpp"
 
 #include <iostream>
@@ -112,3 +113,4 @@ public:
         WSACleanup();
     }
 };
+#endif
